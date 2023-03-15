@@ -27,7 +27,11 @@ public class Player : Unit
     {
         if (currentEnergy < maxEnergy) {
             currentEnergy += energyGainRate * Time.deltaTime;
+            
         }
+
+        // Check if this is resource intensive
+        UpdateEnergyBar();
     }
 
     private void TrySpawnUnit(Unit unit) {
@@ -38,5 +42,15 @@ public class Player : Unit
         }
 
         // Update energy bar
+        // TODO: figure out if this redundant since we update every frame
+        UpdateEnergyBar();
+    }
+
+    protected void UpdateEnergyBar() {
+        healthBarImage.fillAmount = NormalizedEnergy();
+    }
+
+    protected float NormalizedEnergy() {
+        return (float)currentEnergy / maxEnergy;
     }
 }

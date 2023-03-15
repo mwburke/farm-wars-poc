@@ -45,6 +45,8 @@ public class Unit : MonoBehaviour
     protected DamageType weaknessType;
     [SerializeField]
     protected Image healthBarImage;
+    [SerializeField]
+    protected Color buttonColor;
 
     protected float attackTimer;
 
