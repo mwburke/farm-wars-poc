@@ -89,6 +89,10 @@ public class Unit : MonoBehaviour
         return energyCost;
     }
 
+    public void SetIsAlly(bool isAlly) {
+        this.isAlly = isAlly;
+    }
+
     protected void UpdateHealthBar() {
         healthBarImage.fillAmount = NormalizedHealth();
     }
