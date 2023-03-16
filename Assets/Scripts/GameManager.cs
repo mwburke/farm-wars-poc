@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
+    public Player player;
+    public Player enemy;
 
-    public List<Unit> allyUnitTypes;
-    public List<Unit> enemyUnitTypes;
+    public List<GameObject> allyUnitTypes;
+    public List<GameObject> enemyUnitTypes;
+
+    public static explicit operator GameManager(GameObject v) {
+        throw new NotImplementedException();
+    }
 
     public GameObject allyUnitsContainer;
     public GameObject enemyUnitsContainer;
@@ -21,18 +28,16 @@ public class GameManager : MonoBehaviour
         CreateSpawnButtons();
     }
 
-
-    public void SpawnUnit(Unit unit, bool isAlly) {
-        unit.SetIsAlly(isAlly);
+    public void SpawnUnit(GameObject unitPrefab, bool isAlly=true) {
 
         GameObject unitContainer;
         if (isAlly) {
             unitContainer = allyUnitsContainer;
+            player.TrySpawnUnit(unitPrefab, unitContainer, isAlly);
         } else {
             unitContainer = enemyUnitsContainer;
+            player.TrySpawnUnit(unitPrefab, unitContainer, isAlly);
         }
-
-        Instantiate(unit, unitContainer.transform);
     }
 
     public void CreateSpawnButtons() {
@@ -40,14 +45,15 @@ public class GameManager : MonoBehaviour
             Destroy(buttonTransform.gameObject);
         }
 
-        foreach (Unit unit in allyUnitTypes) {
+        foreach (GameObject unit in allyUnitTypes) {
             CreateSpawnButton(unit);
         }
     }
 
-    public void CreateSpawnButton(Unit unit) {
+    public void CreateSpawnButton(GameObject unitPrefab) {
         // Create button and add it to container
         GameObject newButton = Instantiate(spawnButtonPrefab, spawnButtonContainer.transform);
+        Unit unit = unitPrefab.GetComponent<Unit>();
 
         // Set the sprite to be the unit's sprite
         Transform buttonSpriteObject = newButton.transform.Find("Unit Sprite");
@@ -65,5 +71,8 @@ public class GameManager : MonoBehaviour
         TextMeshProUGUI buttonUnitCostText = buttonUnitCost.GetComponent<TextMeshProUGUI>();
         int energyCost = unit.GetEnergyCost();
         buttonUnitCostText.SetText("Cost:\n" + energyCost.ToString());
+
+        // Set unit value
+        newButton.GetComponent<SpawnButton>().SetUnit(unitPrefab);
     }
 }

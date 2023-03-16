@@ -13,7 +13,7 @@ public class Player : Unit
     protected float energyGainRate;
 
     [SerializeField]
-    protected Image EnergyBarImage;
+    protected Image energyBarImage;
 
     // Start is called before the first frame update
     void Start()
@@ -34,20 +34,25 @@ public class Player : Unit
         UpdateEnergyBar();
     }
 
-    private void TrySpawnUnit(Unit unit) {
+    public void TrySpawnUnit(GameObject unitPrefab, GameObject parentObject, bool isAlly=true) {
+        Unit unit = unitPrefab.GetComponent<Unit>();
+        unit.SetIsAlly(isAlly);
+
         float energyCost = (float)unit.GetEnergyCost();
 
         if (energyCost <= currentEnergy) {
+            // Update energy bar
             currentEnergy -= energyCost;
-        }
 
-        // Update energy bar
-        // TODO: figure out if this redundant since we update every frame
-        UpdateEnergyBar();
+            UpdateEnergyBar();
+
+            // Spawn unit
+            Instantiate(unitPrefab, parentObject.transform);
+        }
     }
 
     protected void UpdateEnergyBar() {
-        healthBarImage.fillAmount = NormalizedEnergy();
+        energyBarImage.fillAmount = NormalizedEnergy();
     }
 
     protected float NormalizedEnergy() {
