@@ -25,9 +25,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2930436069884485649}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.02, y: -0.05, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0.303, y: 0.025, z: 0}
+  m_LocalScale: {x: 1.34, y: 1.34, z: 1.34}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7178402879604623774}
   m_RootOrder: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 1425209355
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d5c6ca9c903a1b44282aacc10c2850b8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c3ac3c8ef5d81e345b5079c4c98689d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 7178402879604623775}
   - component: {fileID: 8094170288213525185}
   m_Layer: 0
-  m_Name: Carrot
+  m_Name: Corn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,7 +160,7 @@ SpriteRenderer:
   m_SortingLayerID: 1812059795
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: baf37e08bb733e648b7469935e5a00b9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 81bd39d460b40dd4390d50122ba738b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -183,23 +183,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06531a2266fb264cb59131872a84dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitName: Carrot
+  unitName: Corn
   isAlly: 1
-  maxShield: 0
+  maxShield: 10
   shield: 0
-  maxHealth: 10
+  maxHealth: 12
   currentHealth: 0
-  attackDamage: 4
+  attackDamage: 5
   minAttackRange: 0
-  maxAttackRange: 0.5
+  maxAttackRange: 0.75
   energyCost: 5
   moveSpeed: 0.2
   attackDelay: 1
-  damageType: 0
+  damageType: 1
   resistanceType: 5
-  weaknessType: 4
+  weaknessType: 3
   healthBarImage: {fileID: 4294440944871148203}
-  buttonColor: {r: 0.7830189, g: 0.43916687, b: 0.21052866, a: 0}
+  buttonColor: {r: 0.8679245, g: 0.83638114, b: 0.20060521, a: 0}
 --- !u!1001 &3113423035762598874
 PrefabInstance:
   m_ObjectHideFlags: 0

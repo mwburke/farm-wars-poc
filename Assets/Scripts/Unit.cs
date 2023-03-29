@@ -28,9 +28,9 @@ public class Unit : MonoBehaviour
     [SerializeField]
     protected int attackDamage;
     [SerializeField]
-    protected int minAttackRange;
+    protected float minAttackRange;
     [SerializeField]
-    protected int maxAttackRange;
+    protected float maxAttackRange;
     [SerializeField]
     protected int energyCost;
     [SerializeField]
@@ -47,8 +47,15 @@ public class Unit : MonoBehaviour
     protected Image healthBarImage;
     [SerializeField]
     protected Color buttonColor;
+    [SerializeField]
+    protected GameObject projectile;
+    [SerializeField]
+    protected float projectileFlyTime;
+    [SerializeField]
+    protected bool isRanged;
 
     protected float attackTimer;
+    protected GameManager gameManager;
 
 
     void Start()
@@ -60,16 +67,22 @@ public class Unit : MonoBehaviour
             SpriteRenderer weapon = this.GetComponentInChildren<SpriteRenderer>();
             weapon.flipX = true;
         }
+
+        gameManager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Testing for now
-        Unit target = TryGetTarget(new List<GameObject>());
+        Unit[] opponentUnits;
+        if (isAlly) {
+            opponentUnits = gameManager.enemyUnitsContainer.GetComponentsInChildren<Unit>();
+        } else {
+            opponentUnits = gameManager.allyUnitsContainer.GetComponentsInChildren<Unit>();
+        }
 
+        Unit target = GetFirstOpponent(opponentUnits);
         if (target != null) {
-            // Battle with targeted unit
             if (attackTimer > attackDelay) {
                 // Attack target unit
                 AttackUnit(target);
@@ -77,12 +90,46 @@ public class Unit : MonoBehaviour
                 attackTimer = 0f;
             }
         } else {
-            // Move towards enemy
-            Vector3 moveDirection = isAlly ? Vector3.right : Vector3.left;
-            transform.position += moveSpeed * Time.deltaTime * moveDirection;
+            Move();
         }
 
         attackTimer += Time.deltaTime;
+    }
+
+    private Unit GetFirstOpponent(Unit[] opponentUnits) {
+        /* If there are any opponents, scan through them
+         * and see if they are in attack range.
+         * If they are, then keep track of the closest one.
+         * Return null if none in range, otherwise return closes.
+         */
+        if (opponentUnits.Length == 0) {
+            return null;
+        }
+
+        Unit firstOpponent = null;
+        float minDist = 100f;
+
+        foreach (Unit opponentUnit in opponentUnits) {
+            float dist = Vector3.Distance(opponentUnit.transform.position, transform.position);
+            if (IsDistanceInRange(dist)) {
+                if (dist < minDist) {
+                    minDist = dist;
+                    firstOpponent = opponentUnit;
+                }
+            }
+        }
+
+        return firstOpponent;
+    }
+
+    private bool IsDistanceInRange(float dist) {
+        return (dist >= minAttackRange) & (dist <= maxAttackRange);
+    }
+
+    private void Move() {
+        // Move towards enemy
+        Vector3 moveDirection = isAlly ? Vector3.right : Vector3.left;
+        transform.position += moveSpeed * Time.deltaTime * moveDirection;
     }
 
     public int GetEnergyCost() {
@@ -134,7 +181,7 @@ public class Unit : MonoBehaviour
         currentHealth -= damage;
 
         if (currentHealth <= 0) {
-            Destroy(this);
+            Destroy(gameObject);
             // Add animation?
         } else {
             // Update health bar
