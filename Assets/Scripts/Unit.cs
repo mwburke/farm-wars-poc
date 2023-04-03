@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public enum DamageType {
     SLASHING,
@@ -56,7 +57,10 @@ public class Unit : MonoBehaviour
 
     protected float attackTimer;
     protected GameManager gameManager;
+    protected Unit target;
 
+    public event OnDeathDelegate OnUnitDeath;
+    public delegate void OnDeathDelegate(Unit unit);
 
     void Start()
     {
@@ -74,14 +78,6 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Unit[] opponentUnits;
-        if (isAlly) {
-            opponentUnits = gameManager.enemyUnitsContainer.GetComponentsInChildren<Unit>();
-        } else {
-            opponentUnits = gameManager.allyUnitsContainer.GetComponentsInChildren<Unit>();
-        }
-
-        Unit target = GetFirstOpponent(opponentUnits);
         if (target != null) {
             if (attackTimer > attackDelay) {
                 // Attack target unit
@@ -96,33 +92,23 @@ public class Unit : MonoBehaviour
         attackTimer += Time.deltaTime;
     }
 
-    private Unit GetFirstOpponent(Unit[] opponentUnits) {
-        /* If there are any opponents, scan through them
-         * and see if they are in attack range.
-         * If they are, then keep track of the closest one.
-         * Return null if none in range, otherwise return closes.
-         */
-        if (opponentUnits.Length == 0) {
-            return null;
-        }
-
-        Unit firstOpponent = null;
-        float minDist = 100f;
-
-        foreach (Unit opponentUnit in opponentUnits) {
-            float dist = Vector3.Distance(opponentUnit.transform.position, transform.position);
-            if (IsDistanceInRange(dist)) {
-                if (dist < minDist) {
-                    minDist = dist;
-                    firstOpponent = opponentUnit;
-                }
-            }
-        }
-
-        return firstOpponent;
+    public bool HasTarget() {
+        return target != null;
     }
 
-    private bool IsDistanceInRange(float dist) {
+    public void AssignTarget(Unit target) {
+        this.target = target;
+    }
+
+    public void RemoveTarget() {
+        target = null;
+    }
+
+    public Unit GetTarget() {
+        return target;
+    }
+
+    public bool IsDistanceInRange(float dist) {
         return (dist >= minAttackRange) & (dist <= maxAttackRange);
     }
 
@@ -136,6 +122,10 @@ public class Unit : MonoBehaviour
         return energyCost;
     }
 
+    public bool GetIsAlly() {
+        return isAlly;
+    }
+
     public void SetIsAlly(bool isAlly) {
         this.isAlly = isAlly;
     }
@@ -146,21 +136,6 @@ public class Unit : MonoBehaviour
 
     protected float NormalizedHealth() {
         return (float)currentHealth / maxHealth;
-    }
-
-    protected Unit TryGetTarget(List<GameObject> enemyUnits) {
-        float minDist = int.MaxValue;
-        Unit targetUnit = null;
-
-        foreach (GameObject enemyUnit in enemyUnits) {
-            float distance = (this.transform.position - enemyUnit.transform.position).magnitude;
-            if (distance < minDist & distance >= minAttackRange & distance <= maxAttackRange) {
-                minDist = distance;
-                targetUnit = enemyUnit.GetComponent<Unit>();
-            }
-        }
-
-        return targetUnit;
     }
 
     protected void ProcessAttack(int damage, DamageType damageType) {
@@ -181,8 +156,8 @@ public class Unit : MonoBehaviour
         currentHealth -= damage;
 
         if (currentHealth <= 0) {
+            OnUnitDeath?.Invoke(this);
             Destroy(gameObject);
-            // Add animation?
         } else {
             // Update health bar
             UpdateHealthBar();

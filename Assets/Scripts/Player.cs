@@ -31,10 +31,12 @@ public class Player : Unit
         }
 
         // Check if this is resource intensive
-        UpdateEnergyBar();
+        if (energyBarImage != null) {
+            UpdateEnergyBar();
+        }
     }
 
-    public void TrySpawnUnit(GameObject unitPrefab, GameObject parentObject, bool isAlly=true) {
+    public Unit TrySpawnUnit(GameObject unitPrefab, GameObject parentObject, bool isAlly=true) {
         Unit unit = unitPrefab.GetComponent<Unit>();
         unit.SetIsAlly(isAlly);
 
@@ -44,18 +46,28 @@ public class Player : Unit
             // Update energy bar
             currentEnergy -= energyCost;
 
-            UpdateEnergyBar();
+            if (energyBarImage != null) {
+                UpdateEnergyBar();
+            }
 
             // Spawn unit
             Instantiate(unitPrefab, parentObject.transform);
+
+            return unit;
         }
+
+        return null;
     }
 
     protected void UpdateEnergyBar() {
-        energyBarImage.fillAmount = NormalizedEnergy();
+        energyBarImage.fillAmount = NormalizedEnergy();        
     }
 
     protected float NormalizedEnergy() {
         return (float)currentEnergy / maxEnergy;
+    }
+
+    public float GetCurrentEnergy() {
+        return currentEnergy;
     }
 }

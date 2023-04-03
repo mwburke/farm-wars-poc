@@ -95,9 +95,10 @@ GameObject:
   - component: {fileID: 8265992042825198500}
   - component: {fileID: 8265992042825198507}
   - component: {fileID: 905211439694141759}
+  - component: {fileID: 5463587302671173646}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: EnemyPlayer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -198,11 +199,27 @@ MonoBehaviour:
   damageType: 0
   resistanceType: 5
   weaknessType: 5
-  healthBarImage: {fileID: 0}
+  healthBarImage: {fileID: 7140765016179319011}
   buttonColor: {r: 0, g: 0, b: 0, a: 0}
+  projectile: {fileID: 0}
+  projectileFlyTime: 0
+  isRanged: 0
   maxEnergy: 30
   energyGainRate: 5
-  energyBarImage: {fileID: 7140765016179319011}
+  energyBarImage: {fileID: 0}
+--- !u!114 &5463587302671173646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8265992042825198501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a72d1539e84ed7442abbc49ec7bca839, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitSpawnDelayTime: 1
 --- !u!1001 &8337541125878466962
 PrefabInstance:
   m_ObjectHideFlags: 0

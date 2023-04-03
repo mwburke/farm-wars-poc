@@ -24,7 +24,10 @@ public class Projectile : MonoBehaviour
     void Update()
     {
         // Just move it at constant speed until it reaches target transform position, then destroy
-        // and trigger hit sound?
-        // Is it fast enough we can just do it? 
+        // and trigger projectile onend trigger to destroy it and run audio/animation
+
+        // Is it fast enough we can just do this without checking for death?
+        // I guess end it if the target dies before it hits
+
     }
 }
