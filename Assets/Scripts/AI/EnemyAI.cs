@@ -5,7 +5,7 @@ using UnityEngine;
 abstract public class EnemyAI : MonoBehaviour {
 
     protected GameManager gameManager;
-    protected Player enemyPlayer;
+    public Player enemyPlayer;
     [SerializeField]
     protected float unitSpawnDelayTime;
     protected float unitSpawnTimer;
@@ -13,7 +13,7 @@ abstract public class EnemyAI : MonoBehaviour {
 
     public void Start() {
         gameManager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
-        enemyPlayer = GameObject.FindWithTag("EnemyPlayer").GetComponent<Player>();
+        // enemyPlayer = GameObject.FindWithTag("EnemyPlayer").GetComponent<Player>();
     }
     protected abstract void SetNextUnit();
 }

@@ -7,6 +7,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    public AudioManager audioManager;
 
     public bool isGameActive;
 
@@ -23,11 +24,13 @@ public class GameManager : MonoBehaviour
     public GameObject allyUnitsContainer;
     public GameObject enemyUnitsContainer;
 
+    public float minTimeSpawnSound;
+    private float spawnSoundTimer;
 
-    // Dictionary mapping units that are targets to the units that are targeting them
-    // Used to remove targets when units die
-    // TODO: this is unused right now, need to see if I should optimize it
-    public Dictionary<Unit, Unit> targetUnitMap;
+    public AudioClip spawnSound;
+    public float spawnSoundVolume;
+    public AudioClip deathSound;
+    public float deathSoundVolume;
 
     public void Start() {
         // TODO: remove and set separately upon scene entry
@@ -36,6 +39,12 @@ public class GameManager : MonoBehaviour
 
     public void Update() {
         AssignTargets();
+
+        spawnSoundTimer += Time.deltaTime;
+    }
+
+    public bool IsGameActive() {
+        return isGameActive;
     }
 
     public void AssignTargets() {
@@ -79,22 +88,27 @@ public class GameManager : MonoBehaviour
 
     public void SpawnUnit(GameObject unitPrefab, bool isAlly=true) {
 
-        Unit newUnit;
+        GameObject newUnit;
         GameObject unitContainer;
 
         if (isAlly) {
             unitContainer = allyUnitsContainer;
             newUnit = player.TrySpawnUnit(unitPrefab, unitContainer, isAlly);
             if (newUnit != null) {
-                newUnit.OnUnitDeath += GameManager_OnUnitDeath;
+                newUnit.GetComponent<Unit>().OnUnitDeath += GameManager_OnUnitDeath;
             }
 
         } else {
             unitContainer = enemyUnitsContainer;
             newUnit = enemy.TrySpawnUnit(unitPrefab, unitContainer, isAlly);
             if (newUnit != null) {
-                newUnit.OnUnitDeath += GameManager_OnUnitDeath;
+                newUnit.GetComponent<Unit>().OnUnitDeath += GameManager_OnUnitDeath;
             }
+        }
+
+        if (newUnit != null & spawnSoundTimer >= minTimeSpawnSound) {
+            audioManager.PlayOneShotRandomPitch(spawnSound, spawnSoundVolume);
+            spawnSoundTimer = 0f;
         }
     }
 
@@ -120,7 +134,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // remove listener
-        unit.OnUnitDeath -= GameManager_OnUnitDeath;
+        audioManager.PlayOneShotRandomPitch(deathSound, deathSoundVolume);
     }
 }

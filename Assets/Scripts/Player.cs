@@ -20,23 +20,27 @@ public class Player : Unit
     {
         currentHealth = maxHealth;
         currentEnergy = maxEnergy;
+
+        gameManager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (currentEnergy < maxEnergy) {
-            currentEnergy += energyGainRate * Time.deltaTime;
-            
-        }
+        if (gameManager.IsGameActive()) {
+            if (currentEnergy < maxEnergy) {
+                currentEnergy += energyGainRate * Time.deltaTime;
 
-        // Check if this is resource intensive
-        if (energyBarImage != null) {
-            UpdateEnergyBar();
+            }
+
+            // Check if this is resource intensive
+            if (energyBarImage != null) {
+                UpdateEnergyBar();
+            }
         }
     }
 
-    public Unit TrySpawnUnit(GameObject unitPrefab, GameObject parentObject, bool isAlly=true) {
+    public GameObject TrySpawnUnit(GameObject unitPrefab, GameObject parentObject, bool isAlly=true) {
         Unit unit = unitPrefab.GetComponent<Unit>();
         unit.SetIsAlly(isAlly);
 
@@ -51,9 +55,9 @@ public class Player : Unit
             }
 
             // Spawn unit
-            Instantiate(unitPrefab, parentObject.transform);
+            GameObject newUnit = Instantiate(unitPrefab, parentObject.transform);
 
-            return unit;
+            return newUnit;
         }
 
         return null;

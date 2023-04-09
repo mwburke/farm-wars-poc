@@ -78,18 +78,19 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (target != null) {
-            if (attackTimer > attackDelay) {
-                // Attack target unit
-                AttackUnit(target);
-                // Reset timer
-                attackTimer = 0f;
+        if (gameManager.IsGameActive()) {
+            if (target != null) {
+                if (attackTimer > attackDelay) {
+                    // Attack target unit
+                    AttackUnit(target);
+                    // Reset timer
+                    attackTimer = 0f;
+                }
+            } else {
+                Move();
             }
-        } else {
-            Move();
+            attackTimer += Time.deltaTime;
         }
-
-        attackTimer += Time.deltaTime;
     }
 
     public bool HasTarget() {
