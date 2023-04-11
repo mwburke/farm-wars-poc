@@ -7,11 +7,14 @@ public class RandomUnitAI : EnemyAI {
     private List<GameObject> possibleUnits;
     private GameObject nextUnitPrefab;
     private int nextUnitEnergyCost;
+    private int unitIndex;
 
     public new void Start() {
         base.Start();
 
         possibleUnits = gameManager.enemyUnitTypes;
+        unitIndex = Random.Range(0, possibleUnits.Count);
+        
         SetNextUnit();
         unitSpawnTimer = 0f;
     }
@@ -34,7 +37,14 @@ public class RandomUnitAI : EnemyAI {
 
     protected override void SetNextUnit() {
 
-        int index = Random.Range(0, possibleUnits.Count);
+        int index = 0;
+        if (AIParams.enemyAiType == "random") {
+            index = Random.Range(0, possibleUnits.Count);
+        } else if (AIParams.enemyAiType == "ordered") {
+            index = unitIndex % possibleUnits.Count;
+            unitIndex += 1;
+        }
+        
         nextUnitPrefab = possibleUnits[index];
 
         Unit unit = nextUnitPrefab.GetComponent<Unit>();

@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public AudioManager audioManager;
 
-    public bool isGameActive;
+    public bool isGameActive = true;
 
     public Player player;
     public Player enemy;
@@ -32,9 +33,15 @@ public class GameManager : MonoBehaviour
     public AudioClip deathSound;
     public float deathSoundVolume;
 
+    public GameObject gameOverScreen;
+    public TMPro.TextMeshProUGUI gameOverText;
+
     public void Start() {
         // TODO: remove and set separately upon scene entry
         isGameActive = true;
+
+        player.OnUnitDeath += GameManager_OnUnitDeath;
+        enemy.OnUnitDeath += GameManager_OnUnitDeath;
     }
 
     public void Update() {
@@ -114,26 +121,53 @@ public class GameManager : MonoBehaviour
 
     private void GameManager_OnUnitDeath(Unit unit) {
 
+        Debug.Log(unit);
+
         bool isAlly = unit.GetIsAlly();
-        if (isAlly) {
-            List<Unit> enemyUnits = new(enemyUnitsContainer.GetComponentsInChildren<Unit>());
-            // Unset it as target
-            foreach (Unit targetingUnit in enemyUnits) {
-                if (targetingUnit.GetTarget() == unit) {
-                    targetingUnit.RemoveTarget();
-                }
-            }
 
-
+        if (unit is Player) {
+            Debug.Log("Game over event");
+            HandleGameOver(!isAlly);
         } else {
-            List<Unit> allyUnits = new(allyUnitsContainer.GetComponentsInChildren<Unit>());
-            foreach (Unit targetingUnit in allyUnits) {
-                if (targetingUnit.GetTarget() == unit) {
-                    targetingUnit.RemoveTarget();
+            if (isAlly) {
+                List<Unit> enemyUnits = new(enemyUnitsContainer.GetComponentsInChildren<Unit>());
+                // Unset it as target
+                foreach (Unit targetingUnit in enemyUnits) {
+                    if (targetingUnit.GetTarget() == unit) {
+                        targetingUnit.RemoveTarget();
+                    }
+                }
+            } else {
+                List<Unit> allyUnits = new(allyUnitsContainer.GetComponentsInChildren<Unit>());
+                foreach (Unit targetingUnit in allyUnits) {
+                    if (targetingUnit.GetTarget() == unit) {
+                        targetingUnit.RemoveTarget();
+                    }
                 }
             }
         }
 
         audioManager.PlayOneShotRandomPitch(deathSound, deathSoundVolume);
+    }
+
+    private void HandleGameOver(bool playerWon) {
+        if (playerWon) {
+            gameOverText.SetText("You won!");
+        } else {
+            gameOverText.SetText("You Lost :(");
+        }
+        
+        gameOverScreen.SetActive(true);
+        isGameActive = false;
+    }
+
+    public void LoadBattleScene() {
+        gameOverScreen.SetActive(false);
+        isGameActive = true;
+        SceneManager.LoadSceneAsync("Scenes/BattleScene");
+    }
+
+    public void LoadMainMenuScene() {
+        SceneManager.LoadSceneAsync("Scenes/MainMenu");
     }
 }
